@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.atcrowdfunding.dao.ParamDao">
+
+
+	<!-- 查询分页数据 -->
+	<!-- List<Manager> queryPage(Map<String, Object> paramMap); -->
+	<select id="queryPage" parameterType="map" resultType="Param">
+		SELECT id, name, code, val FROM t_param 
+		<where>
+			<if test="queryText!=null">
+				name like concat('%',#{queryText},'%')
+			</if>
+		</where>
+		order by id desc
+		LIMIT #{startIndex}, #{pagesize}
+	</select>
+	
+	<!-- 查询总页数  -->
+	<!-- Integer queryCount(Map<String, Object> paramMap); -->
+	<select id="queryCount" parameterType="map" resultType="integer">
+		SELECT COUNT(id) FROM t_param
+		<where>
+			<if test="queryText!=null">
+				name like concat('%',#{queryText},'%')
+			</if>
+		</where>
+		
+	</select>
+	
+	 
+	<select id="getParamById" parameterType="int" resultType="Param">
+		select id,name,code,val from t_param where id = #{id} 
+	</select>
+	
+	
+	<update id="updateParam" >
+		update t_param
+        set name = #{name}, code = #{code}, val = #{val}
+        where id = #{id}
+	</update>
+	
+	
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 别名: 统一在spring的配置文件中进行配置 -->
+	
+    <typeAliases>
+        <typeAlias type="com.atguigu.atcrowdfunding.bean.Manager" alias="manager"/>
+        <typeAlias type="com.atguigu.atcrowdfunding.bean.Member" alias="member"/>
+    	<typeAlias type="com.atguigu.atcrowdfunding.bean.ManagerRole" alias="managerRole"/>
+    	<typeAlias type="com.atguigu.atcrowdfunding.bean.Permission" alias="permission"/>
+    	<typeAlias type="com.atguigu.atcrowdfunding.bean.Role" alias="role"/>
+    	<typeAlias type="com.atguigu.atcrowdfunding.bean.Advertisement" alias="advertisement"/>
+    	<typeAlias type="com.atguigu.atcrowdfunding.bean.Cert" alias="cert"/>
+    	<typeAlias type="com.atguigu.atcrowdfunding.bean.Ticket" alias="ticket"/>
+    </typeAliases> 
+ 
+</configuration>

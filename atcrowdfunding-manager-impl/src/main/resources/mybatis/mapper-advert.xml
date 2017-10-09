@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.atcrowdfunding.dao.AdvertisementDao">
+
+    <select id="queryById" resultType="Advertisement">
+        select * from t_advertisement where id = #{id}
+    </select>
+
+    <select id="queryCount" resultType="integer">
+        select count(id) from t_advertisement
+        <where>
+            <if test="pagetext != null">
+            and name like concat('%', #{pagetext}, '%')
+            </if>
+        </where>
+    </select>
+    
+    <select id="pageQuery" resultType="Advertisement">
+        select * from t_advertisement
+        <where>
+            <if test="pagetext != null">
+            and name like concat('%', #{pagetext}, '%')
+            </if>
+        </where>
+        limit #{startIndex}, #{pagesize}
+    </select>
+    
+    <insert id="insertAdvertisement">
+        insert into t_advertisement (
+            name,iconpath,status,url,userid
+        ) values (
+            #{name},#{iconpath},#{status},#{url},#{managerId}
+        )
+    </insert>
+    
+    <update id="updateAdvertisement">
+        update
+            t_advertisement
+        set
+            name = #{name},
+            iconpath = #{iconpath},
+            status = #{status},
+            url = #{url},
+            userid = #{userid}
+        where id = #{id}
+    </update>
+    
+    <delete id="deleteAdvertisement">
+        delete from t_advertisement where id = #{id}
+    </delete>
+    
+    <delete id="deleteAdvertisements">
+        delete from t_advertisement where id in 
+        <foreach collection="datas" item="p" open="(" close=")" separator=",">
+        #{p.id}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.atguigu.atcrowdfunding.dao.TypeDao">
+ 
+ 	<!-- int deleteBatch(Integer[] id); 批量删除type数据 -->
+ 	<delete id="deleteBatch">
+ 		delete from t_type where id in
+ 		<foreach collection="array" open="(" separator="," close=")" item="typeid">
+ 			#{typeid}
+ 		</foreach>
+ 	</delete>
+ 
+ 	<!-- int insertType(Type type); 添加一条type数据   -->
+ 	<insert id="insertType">
+ 		insert into t_type (name,remark)
+ 		values
+ 		(#{name},#{remark})
+ 	</insert>
+ 
+ 	<!-- int updateType(Type type);修改一条type数据 -->
+ 	<update id="updateType">
+ 		update t_type
+ 		<set>
+ 			<if test="name!=null">
+ 				name=#{name},
+ 			</if>
+ 			<if test="remark!=null">
+ 				remark=#{remark}
+ 			</if>
+ 		</set>
+ 		where id=#{id}
+ 	</update>
+ 
+ 	<!-- Type queryOneById(int id);  根据id号查询一条数据  -->
+ 	<select id="queryOneById" resultType="com.atguigu.atcrowdfunding.bean.Type">
+ 		select id,name,remark from t_type where id=#{id}
+ 	</select>
+ 
+ 	<!-- int delete(int id);根据id号删除t_type表中的数据 -->
+ 	<delete id="delete">
+ 		delete from t_type where id=#{id}
+ 	</delete>
+ 
+ 	<!-- int queryTypeCount();查询总记录数 -->
+ 	<select id="queryTypeCount" resultType="int">
+ 		select count(id) from t_type
+ 		<where>
+			<if test="queryText!=null">
+				name like concat('%',#{queryText},'%')
+			</if>
+		</where>
+ 	</select>
+ 	
+ 	<!-- List<Type> queryTypeByPage();查询表中数据，分页 -->
+ 	<select id="queryTypeByPage" resultType="com.atguigu.atcrowdfunding.bean.Type">
+ 		select id,name,remark from t_type
+ 		<where>
+			<if test="queryText!=null">
+				name like concat('%',#{queryText},'%')
+			</if>
+		</where>
+		order by id desc
+ 		limit #{startIndex},#{pagesize}
+ 	</select>
+ 	
+ </mapper>

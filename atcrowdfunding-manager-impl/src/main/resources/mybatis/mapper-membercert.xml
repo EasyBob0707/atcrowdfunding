@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.atcrowdfunding.dao.AuthCertDao">
+
+    <!-- 获取会员上传的资质信息 -->
+    <select id="queryAuthCertInfo" parameterType="int" resultType="map">
+        select c.id,c.name,m.memberid,m.iconpath from t_cert c
+        join t_member_cert m
+        on c.id = m.certid
+        where m.memberid = #{memberid}
+    </select>
+</mapper>

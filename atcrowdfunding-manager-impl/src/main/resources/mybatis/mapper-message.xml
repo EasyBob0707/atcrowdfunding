@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.atguigu.atcrowdfunding.dao.MessageDao">
+  
+  	 <!-- int updateMessage(Message message); 修改一条message数据 -->
+  	<update id="updateMessage">
+ 		update t_message
+ 		<set>
+ 			<if test="content!=null">
+ 				content=#{content}
+ 			</if>
+ 		</set>
+ 		where id=#{id}
+ 	</update>
+  
+  
+  	 <!-- Message queryMessageById(Integer id); 根据id查询一条message -->
+  	 <select id="queryMessageById" resultType="com.atguigu.atcrowdfunding.bean.Message">
+  	 	select id,content from t_message where id=#{id}
+  	 </select>
+  
+  	 <!-- List<Message> queryMessage();查询所有消息 -->
+  	 <select id="queryMessage" resultType="com.atguigu.atcrowdfunding.bean.Message">
+  	 	select id,content from t_message
+  	 </select>
+  </mapper>

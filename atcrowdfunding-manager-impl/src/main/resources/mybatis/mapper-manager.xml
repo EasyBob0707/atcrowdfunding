@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.atcrowdfunding.dao.ManagerDao">
+
+	<!-- 管理员登录接口 -->
+	<!-- Manager queryManagerForLogin(Map<String, Object> paramMap); -->
+	<!-- resultType="Manager"用别名的方式 -->
+	<select id="queryManagerForLogin" parameterType="map"
+		resultType="Manager">
+		SELECT id, loginacct, userpswd, username, email, createtime
+		FROM t_user WHERE loginacct=#{loginacct} AND userpswd=#{userpswd}
+	</select>
+
+	<!-- 注册用户信息进行回显角色的操作 -->
+	<!-- Role getRoleInfo(); -->
+	<select id="getRoleInfo" resultType="com.atguigu.atcrowdfunding.bean.Role">
+		SELECT id, name FROM t_role
+	</select>
+
+	<!-- 查询分页数据 -->
+	<!-- List<Manager> queryPage(Map<String, Object> paramMap); -->
+	<select id="queryPage" parameterType="map" resultType="Manager">
+		SELECT id, loginacct, userpswd, username, email, createtime FROM t_user 
+		<where>
+			<if test="rootManager!=null">
+				username NOT IN (#{rootManager})
+			</if>
+			<if test="queryText!=null">
+				AND loginacct like concat('%',#{queryText},'%')
+			</if>
+		</where>
+		ORDER BY createtime DESC
+		LIMIT #{startIndex}, #{pagesize}
+	</select>
+
+	<!-- 返回分页数据的记录数 -->
+	<!-- Integer queryCount(Map<String, Object> paramMap); -->
+	<select id="queryCount" parameterType="map" resultType="integer">
+		SELECT COUNT(id) FROM t_user
+		<where>
+			<if test="rootManager!=null">
+				username NOT IN (#{rootManager})
+			</if>
+			<if test="queryText!=null">
+				AND loginacct like concat('%',#{queryText},'%')
+			</if>
+		</where>
+	</select>
+
+	<!-- 添加管理员操作 -->
+	<!-- int saveManager(Manager manager); -->
+	<insert id="saveManager" parameterType="Manager"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_user(loginacct, userpswd, username, email, createtime)
+		values(#{loginacct}, #{userpswd}, #{username}, #{email}, #{createtime})
+	</insert>
+
+	<!-- 管理员注册接口 -->
+	<!-- Integer addManagerForRegister(Map<String, Object> paramMap); -->
+	<!-- <insert id="addManagerForRegister" parameterType="map" useGeneratedKeys="true" 
+		keyProperty="id"> 将注册的用户插入到用户表当中 INSERT INTO t_user (loginacct, userpswd, 
+		email, createtime) VALUES (#{loginAcct}, #{userPswd}, #{email}, NOW()) </insert> 
+		关联用户与角色 void insertUserId( User user ); <insert id="insertUserId"> 将用户的ID与角色表进行关联 
+		INSERT INTO t_user_role (userid, roleid) VALUES (#{id}, #{roleId}) </insert> -->
+
+	<!-- 管理员注册接口(暂时不考虑角色) -->
+	<!-- Integer addManagerForRegister(Map<String, Object> paramMap); -->
+	<insert id="addManagerForRegister" parameterType="map">
+		INSERT INTO
+		t_user (loginacct, userpswd, username, email, createtime)VALUES
+		(#{loginacct}, #{userpswd}, #{username}, #{email}, NOW())
+	</insert>
+	
+	<!-- 查询管理员信息为做修改 -->
+	<!-- Manager getManagerById(Integer id); -->
+	<select id="getManagerById" parameterType="int" resultType="Manager">
+		SELECT id, loginacct, userpswd, username, email, createtime FROM t_user WHERE id = #{id}
+	</select>
+	
+	<!-- 修改管理员的信息 -->
+	<!-- int updateManager(Manager manager); -->
+	<update id="updateManager" parameterType="Manager">
+		UPDATE t_user SET username = #{username}, email = #{email}, loginacct = #{loginacct} WHERE id = #{id} 
+	</update>
+	
+	<!-- 根据ID删除管理员 -->
+	<!-- int deleteManager(Integer id); -->
+	<delete id="deleteManager" parameterType="int">
+		DELETE FROM t_user WHERE id = #{id}
+	</delete>
+	
+	<!-- 批量删除管理员信息 -->
+	<!-- int deleteBatchManager(Integer[] id); -->
+	<delete id="deleteBatchManager">
+		DELETE FROM t_user WHERE id in 
+		<foreach collection="array" item="managerId" open="(" separator="," close=")">
+			#{managerId}
+		</foreach>
+	</delete>
+	
+	<!-- 判断注册用户是否存在 -->
+	<!-- Manager getLoginacct(Map<String, Object> paramMap); -->
+	<select id="getLoginacct" parameterType="map" resultType="Manager">
+		SELECT id, loginacct, userpswd, username, email, createtime FROM t_user
+		WHERE loginacct = #{loginacct}
+	</select>
+	
+	
+	<!-- 查询全部的权限  -->
+	<!-- List<Integer> queryRoleidsByManagerid(Integer id); -->
+	<select id="queryRoleidsByManagerid" parameterType="int" resultType="java.lang.Integer">
+		SELECT roleid FROM t_user_role WHERE userid = #{id}	
+	</select>
+	
+	<!-- 设置权限 -->
+	<!-- int insertManagerRole(ManagerRole ur); -->
+	<insert id="insertManagerRole" parameterType="ManagerRole" >
+		insert into t_user_role (
+            userid,roleid
+        ) values (
+            #{managerid},#{roleid}
+        )
+	</insert>
+		
+		
+	<!-- 取消权限 -->
+	<!-- int deleteManagerRoleRelationship(@Param("managerid")Integer managerid, @Param("ids")List<Integer> ids); -->
+	<delete id="deleteManagerRoleRelationship">
+		delete from t_user_role where userid = #{managerid} and roleid in
+		<foreach collection="ids" open="(" separator="," close=")" item="roleid" >
+			#{roleid}
+		</foreach>
+	</delete>
+	
+	<!-- 获取该管理员的对应的权限许可  -->
+	<!-- List<Permission> queryPermissionByUserid(String managerId); -->
+	<select id="queryPermissionByUserid" resultType="Permission">
+		SELECT DISTINCT t_permission.* FROM t_permission, t_role_permission, t_role,t_user_role, t_user 
+		WHERE t_permission.id = t_role_permission.permissionid
+		AND t_role_permission.roleid = t_role.id
+		AND t_role.id = t_user_role.roleid
+		AND t_user_role.userid = t_user.id
+		AND t_user.id = #{managerId}
+	</select>
+	
+
+</mapper>

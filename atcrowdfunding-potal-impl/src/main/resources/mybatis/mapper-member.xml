@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.atcrowdfunding.dao.MemberDao">
+
+	
+	<!-- 会员登录入口  -->
+	<!-- Manager queryMemberForLogin(Map<String, Object> paramMap); -->
+	<select id="queryMemberForLogin" parameterType="map" resultType="Member">
+		SELECT id, loginacct, userpswd, username, email, tel, authstatus, usertype, realname, cardnum, accttype  FROM t_member 
+		WHERE loginacct=#{loginacct} AND userpswd=#{userpswd} 
+	</select>
+	
+	<!-- 会员注册入口 -->
+	<!-- Integer addMemberForRegister(Map<String, Object> paramMap); -->
+	<insert id="addMemberForRegister" parameterType="map">
+		INSERT INTO t_member (loginacct, userpswd, username, email, authstatus, usertype)VALUES
+		(#{loginacct}, '${userpswd}', #{username}, #{email}, '0', '1')
+	</insert>
+	
+	<update id="updateBasicInfo" parameterType="Member" >
+		update t_member set 
+			realname=#{realname},
+			cardnum =#{cardnum},
+			tel=#{tel} 
+		where id=#{id}
+	</update>
+
+	<update id="updateAcctType" parameterType="Member" >
+		update t_member set accttype=#{accttype} where id=#{id}
+	</update>
+	
+	<!-- 保存会员审核认证的资质 -->
+	<insert id="saveMemberCertInfo">
+		INSERT INTO t_member_cert(memberid, certid, iconpath) VALUES (#{memberid}, #{certid}, #{iconpath})
+	</insert>
+
+    <!-- 更新会员表中的邮箱地址 -->
+	<update id="updateMemberEmailByMember" parameterType="Member">
+        UPDATE t_member SET email = #{email} WHERE loginacct = #{loginacct}
+    </update>
+
+    <!-- updateAuthstatus -->
+    <update id="updateAuthstatus">
+        update t_member set authstatus=#{authstatus} where id=#{id}
+    </update>
+
+	<!-- 获取会员的信息 -->
+	<select id="queryMemberByMemberId" parameterType="int" resultType="Member">
+		SELECT * FROM t_member WHERE id=#{memberid}
+	</select>
+	
+    <!--
+    <select id="queryRolePermissionByUser" resultType="permission">
+        select * from t_permission
+        where id in (
+	        select
+	            rp.permissionid
+	        from t_role_permission rp
+	        join t_user_role ur on ur.roleid = rp.roleid and ur.userid = #{id}
+        ) and id != pid
+        order by seqno
+    </select>
+
+    
+    <insert id="insertUser">
+        insert into t_user (
+            name,userpswd,sex,email,loginacct
+        ) values (
+            #{name},#{userpswd},#{sex},#{email},#{loginacct}
+        )
+        <selectKey keyProperty="id" resultType="int">
+            select @@identity as id
+        </selectKey>
+    </insert>
+    
+    <update id="updateUser">
+        update t_user
+        set name = #{name}, sex = #{sex}, email = #{email}, loginacct = #{loginacct}
+        where id = #{id}
+    </update>
+    <delete id="deleteUserRole">
+        delete from t_user_role where userid = #{userid} and roleid = #{roleid}
+    </delete>
+    -->
+</mapper>

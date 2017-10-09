@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.atcrowdfunding.dao.CertDao">
+
+	<!-- List<Cert> queryCerts(); -->
+	<select id="queryCerts" parameterType="map" resultType="com.atguigu.atcrowdfunding.bean.Cert">
+		select id,name
+		from t_cert
+			<if test="queryText!=null">
+				where name like concat('%',#{queryText},'%')
+			</if>
+	</select>
+	
+	<!-- int addCert(Cert cert) -->
+	<insert id="addCert" parameterType="com.atguigu.atcrowdfunding.bean.Cert" useGeneratedKeys="true" keyProperty="id">
+		insert into t_cert(name) 
+		values(#{name})
+	</insert>
+	
+	<!-- int updateCert(Cert cert) -->
+	<update id="updateCert">
+		update t_cert
+		set name=#{name}
+		where id=#{id}
+	</update>
+	
+	<!-- int deleteCert(Integer id) -->
+	<delete id="deleteCert">
+		delete from t_cert
+		where id=#{id}
+	</delete>
+	
+	<!-- int deleteBatchUser(Integer[] id); -->
+	<delete id="deleteBatchUser">
+		delete from t_cert 
+		where id in 
+		<foreach collection="array" open="(" separator="," close=")" item="id" >
+			#{id}
+		</foreach>
+	</delete>
+	
+	<select id="queryCertByAcctType" resultType="Cert" parameterType="string">
+    	SELECT * FROM t_cert WHERE id IN (SELECT certid FROM t_account_type_cert WHERE accttype=#{accttype})
+    </select>
+	
+    <!--
+    <select id="queryRolePermissionByUser" resultType="permission">
+        select * from t_permission
+        where id in (
+	        select
+	            rp.permissionid
+	        from t_role_permission rp
+	        join t_user_role ur on ur.roleid = rp.roleid and ur.userid = #{id}
+        ) and id != pid
+        order by seqno
+    </select>
+
+    <insert id="insertUser">
+        insert into t_user (
+            name,userpswd,sex,email,loginacct
+        ) values (
+            #{name},#{userpswd},#{sex},#{email},#{loginacct}
+        )
+        <selectKey keyProperty="id" resultType="int">
+            select @@identity as id
+        </selectKey>
+    </insert>
+    
+    <update id="updateUser">
+        update t_user
+        set name = #{name}, sex = #{sex}, email = #{email}, loginacct = #{loginacct}
+        where id = #{id}
+    </update>
+    <delete id="deleteUserRole">
+        delete from t_user_role where userid = #{userid} and roleid = #{roleid}
+    </delete>
+    -->
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.atcrowdfunding.dao.PermissionDao">
+ 	
+ 	<!-- 查询所有节点信息 -->
+ 	<!-- List<Permission> queryAllPermission(); -->
+ 	<select id="queryAllPermission" resultType="Permission">
+ 		SELECT id, pid, NAME, icon, url FROM t_permission
+ 	</select>
+ 	
+ 	<!-- 添加叶子节点 -->
+ 	<!-- int savePermission(Permission permission); -->
+ 	<insert id="savePermission">
+ 		INSERT INTO t_permission (pid, name, url) VALUES(#{pid}, #{name}, #{url})
+ 	</insert>
+ 	
+ 	<!-- 删除叶子节点信息 -->
+ 	<!-- int deletePermission(Permission permission); -->
+ 	<delete id="deletePermission">
+ 		DELETE FROM t_permission WHERE id = #{id}
+ 	</delete>
+ 	
+ 	<!-- 修改叶子节点信息 -->
+ 	<!-- int updatePermission(Permission permission); -->
+ 	<update id="updatePermission">
+ 		UPDATE t_permission SET name = #{name}, url = #{url} WHERE id = #{id}
+ 	</update>
+ 	
+ 	<!-- 通过叶子节点修改叶子节点信息  -->
+ 	<!-- Permission queryPermissionById(Integer id); -->
+ 	<select id="queryPermissionById" resultType="Permission">
+ 		SELECT id, pid, NAME, icon, url FROM t_permission WHERE id = #{id}
+ 	</select>
+ 	
+ 	<!-- 查询权限对应的许可 -->
+ 	<!-- List<Integer> queryRolePermissionByRoleid(Integer roleId); -->
+ 	<select id="queryRolePermissionByRoleid" resultType="integer">
+ 		SELECT permissionid FROM t_role_permission WHERE roleid = #{roleId}
+ 	</select>
+</mapper>
